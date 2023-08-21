@@ -130,6 +130,8 @@ int doRound(int *hand, int *dealer, bool *dealerStopped, bool *playerStopped) {
     return dealerRound(dealerStopped, playerStopped, hand, dealer);
 }
 
+bool dealerContinues = false;
+
 int main() {
     while (true) {
         // Reset card values
@@ -168,16 +170,38 @@ int main() {
         cout << "Final hand: " << hand << endl;
 
         if (playerStopped) {
-            int dealerResult = dealerRound(&dealerStopped, &playerStopped, &hand, &dealer);
 
-            if (dealerResult == 0) { 
-                if (hand > dealer) {
-                    cout << "Win!" << endl;
-                } else {
-                    cout << "Lose!" << endl;
+            if (dealerContinues) {
+                while (true) {
+                    int dealerResult = dealerRound(&dealerStopped, &playerStopped, &hand, &dealer);
+
+                    if (dealerResult == 0) {
+                        if (playerStopped && dealerStopped) {
+                            if (hand > dealer) {
+                                cout << "Win!" << endl;
+                                break;
+                            } else {
+                                cout << "Lose!" << endl;
+                                break;
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            } else {
+                int dealerResult = dealerRound(&dealerStopped, &playerStopped, &hand, &dealer);
+
+                if (dealerResult == 0) {
+                    if (hand > dealer) {
+                        cout << "Win!" << endl;
+                    } else {
+                       cout << "Lose!" << endl;
+                    }
                 }
             }
         }
+
 
         cout << "\n\n\n";
     }
