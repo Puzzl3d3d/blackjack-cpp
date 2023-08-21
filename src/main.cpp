@@ -74,8 +74,8 @@ void deal(int *hand, string *card, int *suit, int *royaltyType) {
     }
 }
 
-int dealerRound(bool *dealerStopped, int *hand, int *dealer) {
-    bool draw = (*dealer < 12) | (random(0, round((*dealer - 11)/3)) == 0);
+int dealerRound(bool *dealerStopped, bool *playerStopped, int *hand, int *dealer) {
+    bool draw = (*hand > *dealer && *playerStopped) | (*dealer < 12) | (random(0, round((*dealer - 11)/3)) == 0);
 
     if (!*dealerStopped && draw) {
         string dealerCard;
@@ -113,7 +113,7 @@ int dealerRound(bool *dealerStopped, int *hand, int *dealer) {
     return 0;
 }
 
-int doRound(int *hand, int *dealer, bool *dealerStopped) {
+int doRound(int *hand, int *dealer, bool *dealerStopped, bool *playerStopped) {
     string card;
     int suit;
     int royaltyType = 0;
@@ -127,7 +127,7 @@ int doRound(int *hand, int *dealer, bool *dealerStopped) {
         return 1;
     }
 
-    return dealerRound(dealerStopped, hand, dealer);
+    return dealerRound(dealerStopped, playerStopped, hand, dealer);
 }
 
 int main() {
@@ -149,7 +149,7 @@ int main() {
         bool dealerStopped = false;
         bool playerStopped = false;
 
-        doRound(&hand, &dealer, &dealerStopped);
+        doRound(&hand, &dealer, &dealerStopped, &playerStopped);
 
         while (true) {
             cout << "Draw? (Y/n) ";
@@ -160,7 +160,7 @@ int main() {
 
             if (input != "y") { playerStopped = true; break; };
 
-            int result = doRound(&hand, &dealer, &dealerStopped);
+            int result = doRound(&hand, &dealer, &dealerStopped, &playerStopped);
 
             if (result == 1) { break; }
         }
@@ -168,7 +168,7 @@ int main() {
         cout << "Final hand: " << hand << endl;
 
         if (playerStopped) {
-            int dealerResult = dealerRound(&dealerStopped, &hand, &dealer);
+            int dealerResult = dealerRound(&dealerStopped, &playerStopped, &hand, &dealer);
 
             if (dealerResult == 0) { 
                 if (hand > dealer) {
